@@ -1,0 +1,32 @@
+tsoi_event_bus:
+    microservices:
+        current_microservice:
+            connection:
+                host: rabbitmq1
+                port: 5672
+                user_name: guest
+                password: guest
+            exchange:
+                name: event_bus1
+            integration_events:
+                events:
+                    -
+                    -
+                event_handling:
+                    -
+                    -
+        microservice2:
+            connection:
+                host: rabbitmq2
+                port: 5673
+                user_name: guest
+                password: guest
+            exchange:
+                name: event_bus2
+            integration_events:
+                events:
+                    -
+                    -
+                event_handling:
+                    -
+                    -

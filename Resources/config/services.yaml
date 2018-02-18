@@ -1,0 +1,15 @@
+services:
+
+    Tsoi\EventBusBundle\EventBus\Amqp\Publisher:
+        class: Tsoi\EventBusBundle\EventBus\Amqp\Publisher
+
+    Tsoi\EventBusBundle\EventBus\Amqp\Consumer:
+        class: Tsoi\EventBusBundle\EventBus\Amqp\Consumer
+
+    tsoi.event_bus:
+        class: Tsoi\EventBusBundle\EventBus\EventBus
+        public: true
+        arguments:
+            - '@Tsoi\EventBusBundle\EventBus\Amqp\Publisher'
+            - '@Tsoi\EventBusBundle\EventBus\Amqp\Consumer'
+            - '@service_container'
