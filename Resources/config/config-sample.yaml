@@ -1,32 +1,36 @@
-tsoi_event_bus:
-    microservices:
-        current_microservice:
-            connection:
-                host: rabbitmq1
-                port: 5672
-                user_name: guest
-                password: guest
-            exchange:
-                name: event_bus1
-            integration_events:
-                events:
-                    -
-                    -
-                event_handling:
-                    -
-                    -
-        microservice2:
-            connection:
-                host: rabbitmq2
-                port: 5673
-                user_name: guest
-                password: guest
-            exchange:
-                name: event_bus2
-            integration_events:
-                events:
-                    -
-                    -
-                event_handling:
-                    -
-                    -
+parameters:
+
+    tsoi_event_bus:
+        microservices:
+            current_microservice:
+                connection:
+                    host: rabbitmq1
+                    port: 5672
+                    user_name: guest
+                    password: guest
+                exchange:
+                    name: event_exchange1
+                integration_events:
+                    - event: 'App\IntegrationEvents\Events\SomeEvent'
+                      event_handler: 'App\IntegrationEvents\EventHandling\SomeEventHandle'
+                    - event: 'App\IntegrationEvents\Events\AnotherEvent'
+                      event_handler: 'App\IntegrationEvents\EventHandling\AnotherEventHandle'
+            microservice2:
+                connection:
+                    host: rabbitmq2
+                    port: 5673
+                    user_name: guest
+                    password: guest
+                exchange:
+                    name: event_exchange2
+                integration_events:
+                    - event: 'App\IntegrationEvents\Events\SomeEvent'
+                    - event: 'App\IntegrationEvents\Events\AnotherEvent'
+
+services:
+
+    App\IntegrationEvents\:
+        resource: '../src/IntegrationEvents/*'
+        autowire: true
+        autoconfigure: true
+        public: true

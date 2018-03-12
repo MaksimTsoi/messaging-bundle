@@ -121,14 +121,18 @@ class EventBus implements EventBusInterface
 
         if ($eventHandler) {
             $currentMicroserviceConfig = $microservicesConfig['current_microservice'];
+            $integrationEvents         = $currentMicroserviceConfig['integration_events'];
+            $event                     = array_column($integrationEvents, 'event');
 
-            if (array_search($key, $currentMicroserviceConfig['integration_events']['events']) === false) {
+            if (!in_array($key, $event, true)) {
                 throw new ConfigException(
                     \sprintf("Please check your config file, event '%s' is not defined.", $key)
                 );
             }
 
-            if (array_search(\get_class($eventHandler), $currentMicroserviceConfig['integration_events']['event_handling']) === false) {
+            $eventHandling = array_column($integrationEvents, 'event_handler');
+
+            if (!in_array(\get_class($eventHandler), $eventHandling, true)) {
                 throw new ConfigException(
                     \sprintf("Please check your config file, event handler '%s' is not defined.", $eventHandler)
                 );
@@ -138,7 +142,9 @@ class EventBus implements EventBusInterface
         }
 
         $result = \array_map(function($item) use ($key) {
-            if (array_search($key, $item['integration_events']['events']) !== false) {
+            $event = array_column($item['integration_events'], 'event');
+
+            if (in_array($key, $event, true)) {
                 return $item;
             }
         }, $microservicesConfig);
