@@ -3,6 +3,7 @@
 namespace Tsoi\EventBusBundle\EventBus;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Tsoi\EventBusBundle\DependencyInjection\Configuration;
 use Tsoi\EventBusBundle\EventBus\Abstractions\DynamicIntegrationEventHandler;
 use Tsoi\EventBusBundle\EventBus\Abstractions\EventBusInterface;
 use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler;
@@ -54,12 +55,14 @@ class EventBus implements EventBusInterface
     public function publish(IntegrationEvent $integrationEvent)
     {
         foreach ($this->getConfigs($integrationEvent) as $config) {
-            $this->publisher->addConfig($config);
-            $this->publisher->publish(
-                $integrationEvent->getRouting(),
-                new Message(\serialize($integrationEvent))
-            );
-            Request::shutdown($this->publisher->getChannel(), $this->publisher->getConnection());
+            if ($config) {
+                $this->publisher->addConfig($config);
+                $this->publisher->publish(
+                    $integrationEvent->getRouting(),
+                    new Message(\serialize($integrationEvent))
+                );
+                Request::shutdown($this->publisher->getChannel(), $this->publisher->getConnection());
+            }
         }
     }
 
@@ -120,7 +123,7 @@ class EventBus implements EventBusInterface
         $microservicesConfig = $this->container->getParameter('tsoi_event_bus')['microservices'];
 
         if ($eventHandler) {
-            $currentMicroserviceConfig = $microservicesConfig['current_microservice'];
+            $currentMicroserviceConfig = $microservicesConfig[Configuration::CURRENT_MS];
             $integrationEvents         = $currentMicroserviceConfig['integration_events'];
             $event                     = array_column($integrationEvents, 'event');
 

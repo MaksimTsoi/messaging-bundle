@@ -12,6 +12,8 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+    const CURRENT_MS = 'current_microservice';
+
     /**
      * {@inheritdoc}
      */

@@ -1,5 +1,7 @@
 TsoiEventBusBundle
 ==================
+[![Pre Release](https://img.shields.io/packagist/vpre/tsoi/event-bus-bundle.svg)](https://packagist.org/packages/tsoi/event-bus-bundle)
+[![License](http://img.shields.io/packagist/l/tsoi/event-bus-bundle.svg)](https://packagist.org/packages/tsoi/event-bus-bundle)
 
 TsoiEventBusBundle is event-based communication between microservices for Symfony4. It is based on [RabbitMQ](https://www.rabbitmq.com) and uses library [php-amqplib/php-amqplib](https://github.com/php-amqplib/php-amqplib).
 
@@ -9,7 +11,7 @@ Installation
 ### 1. Use Composer to download:
 
 ```bash
-  $ composer require tsoi/event-bus-bundle
+$ composer require tsoi/event-bus-bundle
 ```
 
 ### 2. Register the bundle in your application:
@@ -23,7 +25,7 @@ return [
 
 ### 3. Configure
 
-Create file `config/packages/tsoi_event_bus.yaml` in first microservice.
+Create file `config/packages/tsoi_event_bus.yaml` in **first** microservice.
 ```yml
 tsoi_event_bus:
     microservices:
@@ -34,12 +36,7 @@ tsoi_event_bus:
                 user_name: guest
                 password: guest
             exchange:
-                name: event_bus1
-            integration_events:
-                - event: 'App\IntegrationEvents\Events\SomeEvent'
-                  event_handler: 'App\IntegrationEvents\EventHandling\SomeEventHandle'
-                - event: 'App\IntegrationEvents\Events\AnotherEvent'
-                  event_handler: 'App\IntegrationEvents\EventHandling\AnotherEvent'
+                name: event_exchange1
         microservice2:
             connection:
                 host: localhost
@@ -47,13 +44,10 @@ tsoi_event_bus:
                 user_name: guest
                 password: guest
             exchange:
-                name: event_bus2
-            integration_events:
-                - event: 'App\IntegrationEvents\Events\SomeEvent'
-                - event: 'App\IntegrationEvents\Events\AnotherEvent'
+                name: event_exchange2
 ```
 
-Create file `config/packages/tsoi_event_bus.yaml` in second microservice.
+Create file `config/packages/tsoi_event_bus.yaml` in **second** microservice.
 ```yml
 tsoi_event_bus:
     microservices:
@@ -64,12 +58,7 @@ tsoi_event_bus:
                 user_name: guest
                 password: guest
             exchange:
-                name: event_bus2
-            integration_events:
-                - event: 'App\IntegrationEvents\Events\SomeEvent'
-                  event_handler: 'App\IntegrationEvents\EventHandling\SomeEventHandle'
-                - event: 'App\IntegrationEvents\Events\AnotherEvent'
-                  event_handler: 'App\IntegrationEvents\EventHandling\AnotherEvent'
+                name: event_exchange2
         microservice1:
             connection:
                 host: localhost
@@ -77,13 +66,10 @@ tsoi_event_bus:
                 user_name: guest
                 password: guest
             exchange:
-                name: event_bus1
-            integration_events:
-                - event: 'App\IntegrationEvents\Events\SomeEvent'
-                - event: 'App\IntegrationEvents\Events\AnotherEvent'
+                name: event_exchange1
 ``` 
 
-Update file `config/services.yaml`
+Update file `config/services.yaml` in **each** microservice.
 ```yml
 services:
     App\IntegrationEvents\:
@@ -95,3 +81,128 @@ services:
 
 How to use
 ----------
+
+### First microservice:
+
+Create event `src/IntegrationEvents/Events/HelloEvent.php`
+
+```php
+<?php
+
+namespace App\IntegrationEvents\Events;
+
+use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
+
+class HelloEvent extends IntegrationEvent
+{
+    protected $routing = 'hello_routing';
+
+    protected $queue = 'hello_queue';
+    
+    public function helloWorld() 
+    {
+        return 'Hello World!';
+    }
+}
+```
+
+Create event handler `src/IntegrationEvents/EventHandling/HelloEventHandler.php`
+
+```php
+<?php
+
+namespace App\IntegrationEvents\EventHandling;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler;
+use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
+
+class HelloEventHandler implements IntegrationEventHandler
+{
+    protected $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    public function handle(IntegrationEvent $event)
+    {
+        $log = $this->container->get('kernel')->getLogDir().'/HelloEvent';
+        file_put_contents($log, $event->helloWorld(), FILE_APPEND);
+    }
+}
+```
+
+Update `config/packages/tsoi_event_bus.yaml`. Add **event**, **event_handler** in `integration_events`
+
+```yml
+tsoi_event_bus:
+    microservices:
+        current_microservice:
+            integration_events:
+                - event: 'App\IntegrationEvents\Events\HelloEvent'
+                  event_handler: 'App\IntegrationEvents\EventHandling\HelloEventHandler'
+``` 
+
+**Subscribe** to events. Run the command
+
+```bash
+$ php bin/console tsoi_event_bus:run
+```
+
+### Second microservice:
+
+Create event `src/IntegrationEvents/Events/HelloEvent.php` is same as in first microservice.
+
+```php
+<?php
+
+namespace App\IntegrationEvents\Events;
+
+use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
+
+class HelloEvent extends IntegrationEvent
+{
+    protected $routing = 'hello_routing';
+
+    protected $queue = 'hello_queue';
+    
+    public function helloWorld() 
+    {
+        return 'Hello World!';
+    }
+}
+```
+
+Update `config/packages/tsoi_event_bus.yaml`. Add **event** in `integration_events`
+
+```yml
+tsoi_event_bus:
+    microservices:
+        microservice1:
+            integration_events:
+                - event: 'App\IntegrationEvents\Events\HelloEvent'
+``` 
+
+**Publish** event. Update `src/Controller/DefaultController.php`
+
+```php
+<?php
+
+namespace App\Controller;
+
+use App\IntegrationEvents\Events\HelloEvent;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class DefaultController extends Controller
+{
+    public function indexAction()
+    {
+        $eventBus = $this->get('tsoi.event_bus');
+        $eventBus->publish(new HelloEvent());
+    }
+}
+```
+
+Now check your log `var/log/HelloEvent` in first microservice.

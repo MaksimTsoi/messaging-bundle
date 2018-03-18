@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
+use Tsoi\EventBusBundle\DependencyInjection\Configuration;
 
 /**
  * Class RunCommand
@@ -49,7 +50,7 @@ class RunCommand extends Command
     {
         $integrationEvents = $this->container->getParameter(
             'tsoi_event_bus'
-        )['microservices']['current_microservice']['integration_events'];
+        )['microservices'][Configuration::CURRENT_MS]['integration_events'];
 
         foreach ($integrationEvents as $integrationEvent) {
             $process = new Process(
