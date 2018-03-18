@@ -30,8 +30,6 @@
     "require-dev": {
         "phpunit/phpunit": "^5.0 || ^6.0"
     },
-    "suggest": {
-    },
     "autoload": {
         "psr-4": {
             "Tsoi\\EventBusBundle\\": ""
