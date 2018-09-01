@@ -6,6 +6,11 @@ services:
     Tsoi\EventBusBundle\EventBus\Amqp\Consumer:
         class: Tsoi\EventBusBundle\EventBus\Amqp\Consumer
 
+    Tsoi\EventBusBundle\EventBus\EventBusConfig:
+        class: Tsoi\EventBusBundle\EventBus\EventBusConfig
+        arguments:
+            - '@service_container'
+
     tsoi.event_bus:
         class: Tsoi\EventBusBundle\EventBus\EventBus
         public: true
@@ -13,6 +18,7 @@ services:
             - '@Tsoi\EventBusBundle\EventBus\Amqp\Publisher'
             - '@Tsoi\EventBusBundle\EventBus\Amqp\Consumer'
             - '@service_container'
+            - '@Tsoi\EventBusBundle\EventBus\EventBusConfig'
 
     tsoi.command.run:
         class: Tsoi\EventBusBundle\Command\RunCommand
