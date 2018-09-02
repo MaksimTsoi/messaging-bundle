@@ -23,13 +23,6 @@ services:
     tsoi.command.run:
         class: Tsoi\EventBusBundle\Command\RunCommand
         arguments:
-            - '@service_container'
-        tags:
-            - { name: console.command }
-
-    tsoi.command.subscribe:
-        class: Tsoi\EventBusBundle\Command\SubscribeCommand
-        arguments:
             - '@tsoi.event_bus'
             - '@service_container'
         tags:

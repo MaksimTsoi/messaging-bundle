@@ -8,9 +8,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Tsoi\EventBusBundle\DependencyInjection\Configuration;
+use Tsoi\EventBusBundle\EventBus\EventBus;
 
 /**
  * Class RunCommand
+ *
  * @package Tsoi\EventBusBundle\Command
  */
 class RunCommand extends Command
@@ -21,12 +23,19 @@ class RunCommand extends Command
     protected $container;
 
     /**
+     * @var EventBus
+     */
+    protected $eventBus;
+
+    /**
      * RunCommand constructor.
      *
-     * @param ContainerInterface $container
+     * @param \Tsoi\EventBusBundle\EventBus\EventBus                    $eventBus
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(EventBus $eventBus, ContainerInterface $container)
     {
+        $this->eventBus  = $eventBus;
         $this->container = $container;
 
         parent::__construct();
@@ -48,19 +57,14 @@ class RunCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $integrationEvents = $this->container->getParameter(
-            'tsoi_event_bus'
-        )['microservices'][Configuration::CURRENT_MS]['integration_events'];
+        $parameters        = $this->container->getParameter('tsoi_event_bus');
+        $currentMS         = $parameters[Configuration::CURRENT_MS];
+        $integrationEvents = $parameters['microservices'][$currentMS]['integration_events'];
 
         foreach ($integrationEvents as $integrationEvent) {
-            $process = new Process(
-                sprintf(
-                    'php bin/console tsoi_event_bus:subscribe %s %s',
-                    \addslashes($integrationEvent['event']),
-                    \addslashes($integrationEvent['event_handler'])
-                )
-            );
-            $process->start();
+            $this->eventBus->subscribe($integrationEvent['event'], $integrationEvent['event_handler']);
         }
+
+        $this->eventBus->execute();
     }
 }

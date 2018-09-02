@@ -40,6 +40,11 @@ class EventBus implements EventBusInterface
     protected $config;
 
     /**
+     * @var array
+     */
+    protected $subscriptions = [];
+
+    /**
      * EventBus constructor.
      *
      * @param \Tsoi\EventBusBundle\EventBus\Amqp\Publisher              $publisher
@@ -66,13 +71,9 @@ class EventBus implements EventBusInterface
      */
     public function publish(IntegrationEvent $integrationEvent)
     {
-        foreach ($this->config->get($integrationEvent) as $config) {
-            $this->publisher->addConfig($config);
-            $this->publisher->publish(
-                $integrationEvent->getRouting(),
-                new Message(\serialize($integrationEvent))
-            );
-        }
+        $this->config->setIntegrationEvent($integrationEvent);
+        $this->publisher->addConfig($this->config->get());
+        $this->publisher->publish($this->config->getRoutingName(), new Message(\serialize($integrationEvent)));
 
         Request::shutdown($this->publisher->getChannel(), $this->publisher->getConnection());
     }
@@ -81,21 +82,38 @@ class EventBus implements EventBusInterface
      * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent              $integrationEvent
      * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler $eventHandler
      *
-     * @throws \Tsoi\EventBusBundle\Exception\BreakException
      * @throws \Tsoi\EventBusBundle\Exception\ConfigException
      */
     public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandler $eventHandler)
     {
-        foreach ($this->config->get($integrationEvent, $eventHandler) as $config) {
-            $this->consumer->addConfig($config);
-            $this->consumer->consume(
-                $integrationEvent->getQueue(),
-                $integrationEvent->getRouting(),
-                function (IntegrationEvent $event) use ($eventHandler) {
-                    $eventHandler->handle($event);
-                }
-            );
+        $this->config->setIntegrationEvent($integrationEvent)
+                     ->setEventHandler($eventHandler);
+        $routingName = $this->config->getRoutingName();
+
+        $this->subscriptions['config']                     = $this->config->get();
+        $this->subscriptions['queueName']                  = $this->config->getQueueName();
+        $this->subscriptions['routingNames'][]             = $routingName;
+        $this->subscriptions['eventHandler'][$routingName] = $eventHandler;
+    }
+
+    /**
+     * @throws \Tsoi\EventBusBundle\Exception\BreakException
+     */
+    public function execute()
+    {
+        if (empty($this->subscriptions)) {
+            return;
         }
+
+        $this->consumer->addConfig($this->subscriptions['config']);
+        $eventHandlers = $this->subscriptions['eventHandler'];
+        $this->consumer->consume(
+            $this->subscriptions['queueName'],
+            $this->subscriptions['routingNames'],
+            function (IntegrationEvent $event, $routingName) use ($eventHandlers) {
+                $eventHandlers[$routingName]->handle($event);
+            }
+        );
 
         Request::shutdown($this->consumer->getChannel(), $this->consumer->getConnection());
     }

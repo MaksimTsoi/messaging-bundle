@@ -24,6 +24,18 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->arrayNode('default_connection')
+                    ->children()
+                        ->scalarNode('host')->end()
+                        ->integerNode('port')->end()
+                        ->scalarNode('user_name')->end()
+                        ->scalarNode('password')->end()
+                        ->scalarNode('vhost')->end()
+                        ->arrayNode('ssl_options')->prototype('scalar')->end()->end()
+                        ->arrayNode('options')->prototype('scalar')->end()->end()
+                    ->end()
+                ->end()
+                ->scalarNode('current_microservice')->isRequired()->cannotBeEmpty()->end()
                 ->arrayNode('microservices')
                     ->arrayPrototype()
                         ->children()
