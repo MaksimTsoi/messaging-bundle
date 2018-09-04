@@ -1,6 +1,6 @@
 TsoiEventBusBundle
 ==================
-[![Pre Release](https://img.shields.io/packagist/vpre/tsoi/event-bus-bundle.svg)](https://packagist.org/packages/tsoi/event-bus-bundle)
+[![Release](https://img.shields.io/packagist/v/tsoi/event-bus-bundle.svg)](https://packagist.org/packages/tsoi/event-bus-bundle)
 [![License](http://img.shields.io/packagist/l/tsoi/event-bus-bundle.svg)](https://packagist.org/packages/tsoi/event-bus-bundle)
 
 TsoiEventBusBundle is event-based communication between microservices for Symfony4. It is based on [RabbitMQ](https://www.rabbitmq.com) and uses library [php-amqplib/php-amqplib](https://github.com/php-amqplib/php-amqplib).
@@ -125,6 +125,20 @@ tsoi_event_bus:
 
 ```bash
 $ php bin/console tsoi_event_bus:run
+```
+
+Or run supervisord
+
+```supervisord
+[program:tsoi_event_bus]
+command=php /home/$user/symfony_project/bin/console tsoi_event_bus:run
+autostart=true
+autorestart=true
+process_name=%(program_name)s_%(process_num)02d
+user=$user
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/home/$user/symfony_project/var/log/tsoi_event_bus.log
 ```
 
 ### Second microservice:

@@ -2,7 +2,7 @@ parameters:
 
     tsoi_event_bus:
         default_connection:
-            host: rabbitmq
+            host: localhost
             port: 5672
             user_name: guest
             password: guest
