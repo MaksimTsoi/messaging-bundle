@@ -28,45 +28,29 @@ return [
 Create file `config/packages/tsoi_event_bus.yaml` in **first** microservice.
 ```yml
 tsoi_event_bus:
+    default_connection:
+        host: rabbitmq
+        port: 5672
+        user_name: guest
+        password: guest
+    current_microservice: microservice1
     microservices:
-        current_microservice:
-            connection:
-                host: localhost
-                port: 5672
-                user_name: guest
-                password: guest
-            exchange:
-                name: event_exchange1
+        microservice1:
         microservice2:
-            connection:
-                host: localhost
-                port: 5672
-                user_name: guest
-                password: guest
-            exchange:
-                name: event_exchange2
 ```
 
 Create file `config/packages/tsoi_event_bus.yaml` in **second** microservice.
 ```yml
 tsoi_event_bus:
+    default_connection:
+        host: rabbitmq
+        port: 5672
+        user_name: guest
+        password: guest
+    current_microservice: microservice2
     microservices:
-        current_microservice:
-            connection:
-                host: localhost
-                port: 5672
-                user_name: guest
-                password: guest
-            exchange:
-                name: event_exchange2
         microservice1:
-            connection:
-                host: localhost
-                port: 5672
-                user_name: guest
-                password: guest
-            exchange:
-                name: event_exchange1
+        microservice2:
 ``` 
 
 Update file `config/services.yaml` in **each** microservice.
@@ -95,14 +79,6 @@ use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
 
 class HelloEvent extends IntegrationEvent
 {
-    protected $routing = 'hello_routing';
-
-    protected $queue = 'hello_queue';
-    
-    public function helloWorld() 
-    {
-        return 'Hello World!';
-    }
 }
 ```
 
@@ -129,7 +105,7 @@ class HelloEventHandler implements IntegrationEventHandler
     public function handle(IntegrationEvent $event)
     {
         $log = $this->container->get('kernel')->getLogDir().'/HelloEvent';
-        file_put_contents($log, $event->helloWorld(), FILE_APPEND);
+        file_put_contents($log, $event->getBody()[0], FILE_APPEND);
     }
 }
 ```
@@ -139,7 +115,7 @@ Update `config/packages/tsoi_event_bus.yaml`. Add **event**, **event_handler** i
 ```yml
 tsoi_event_bus:
     microservices:
-        current_microservice:
+        microservice1:
             integration_events:
                 - event: 'App\IntegrationEvents\Events\HelloEvent'
                   event_handler: 'App\IntegrationEvents\EventHandling\HelloEventHandler'
@@ -164,18 +140,10 @@ use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
 
 class HelloEvent extends IntegrationEvent
 {
-    protected $routing = 'hello_routing';
-
-    protected $queue = 'hello_queue';
-    
-    public function helloWorld() 
-    {
-        return 'Hello World!';
-    }
 }
 ```
 
-Update `config/packages/tsoi_event_bus.yaml`. Add **event** in `integration_events`
+Update `config/packages/tsoi_event_bus.yaml` is same as in first microservice.
 
 ```yml
 tsoi_event_bus:
@@ -183,6 +151,7 @@ tsoi_event_bus:
         microservice1:
             integration_events:
                 - event: 'App\IntegrationEvents\Events\HelloEvent'
+                  event_handler: 'App\IntegrationEvents\EventHandling\HelloEventHandler'
 ``` 
 
 **Publish** event. Update `src/Controller/DefaultController.php`
@@ -199,8 +168,10 @@ class DefaultController extends Controller
 {
     public function indexAction()
     {
-        $eventBus = $this->get('tsoi.event_bus');
-        $eventBus->publish(new HelloEvent());
+        $eventBus   = $this->get('tsoi.event_bus');
+        $helloEvent = new HelloEvent();
+        $helloEvent->setBody(['hello world!']);
+        $eventBus->publish($helloEvent);
     }
 }
 ```
