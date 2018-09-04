@@ -94,7 +94,7 @@ class EventBusConfig
         $currentMicroservice = $config[Configuration::CURRENT_MS];
 
         if ($this->eventHandler) {
-            $microservicesConfig = [$microservicesConfig[$currentMicroservice]];
+            $microservicesConfig = [$currentMicroservice => $microservicesConfig[$currentMicroservice]];
         }
 
         $result = \array_filter(
@@ -113,9 +113,14 @@ class EventBusConfig
             throw new ConfigException(\sprintf("Please check your config file, event '%s' is not defined.", $key));
         }
 
-        $this->data   = \current($result);
-        $exchangeName = isset($this->data['exchange']['name']) ? $this->data['exchange']['name'] : \key($result);
+        $this->data                     = \current($result);
+        $exchangeName                   =
+            isset($this->data['exchange']['name']) ? $this->data['exchange']['name'] : \key($result);
         $this->data['exchange']['name'] = 'tsoi-'.$exchangeName;
+
+        if (!isset($this->data['connection'])) {
+            $this->data['connection'] = $config['default_connection'];
+        }
 
         if ($this->eventHandler) {
             $eventHandling = \array_column($this->data['integration_events'], 'event_handler');
@@ -134,7 +139,7 @@ class EventBusConfig
      * @return string
      * @throws \Tsoi\EventBusBundle\Exception\ConfigException
      */
-    public function getRoutingName()
+    public function getQueueName()
     {
         return $this->get()['exchange']['name'].'-queue';
     }
@@ -143,7 +148,7 @@ class EventBusConfig
      * @return string
      * @throws \Tsoi\EventBusBundle\Exception\ConfigException
      */
-    public function getQueueName()
+    public function getRoutingName()
     {
         return $this->get()['exchange']['name'].'-'.\md5(\get_class($this->integrationEvent));
     }

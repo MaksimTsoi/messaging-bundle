@@ -14,15 +14,14 @@ use Tsoi\EventBusBundle\Exception\BreakException;
 class Consumer extends Request
 {
     /**
-     * @param string  $queue
-     * @param string  $routing
-     * @param Closure $callback
-     *
-     * @throws BreakException
+     * @param string       $queue
+     * @param string|array $routing
+     * @param \Closure     $callback
      *
      * @return bool
+     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
      */
-    public function consume(string $queue, string $routing, Closure $callback)
+    public function consume(string $queue, $routing, Closure $callback)
     {
         $this->addConfig(
             [

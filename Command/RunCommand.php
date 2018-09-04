@@ -62,7 +62,10 @@ class RunCommand extends Command
         $integrationEvents = $parameters['microservices'][$currentMS]['integration_events'];
 
         foreach ($integrationEvents as $integrationEvent) {
-            $this->eventBus->subscribe($integrationEvent['event'], $integrationEvent['event_handler']);
+            $this->eventBus->subscribe(
+                $this->container->get($integrationEvent['event']),
+                $this->container->get($integrationEvent['event_handler'])
+            );
         }
 
         $this->eventBus->execute();

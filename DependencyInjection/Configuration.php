@@ -53,7 +53,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('exchange')
                                 ->addDefaultsIfNotSet()
                                 ->children()
-                                    ->scalarNode('name')->defaultValue('tsoi-exchange.topic')->end()
+                                    ->scalarNode('name')->end()
                                     ->scalarNode('type')->defaultValue('topic')->end()
                                     ->booleanNode('passive')->defaultFalse()->end()
                                     ->booleanNode('auto_delete')->defaultFalse()->end()
