@@ -8,6 +8,7 @@ use Tsoi\EventBusBundle\Exception\BreakException;
 
 /**
  * Class Consumer
+ *
  * @package Tsoi\EventBusBundle\EventBus\Amqp
  */
 class Consumer extends Request
@@ -23,12 +24,14 @@ class Consumer extends Request
      */
     public function consume(string $queue, string $routing, Closure $callback)
     {
-        $this->addConfig([
-            'queue' => [
-                'name'    => $queue,
-                'routing' => $routing,
-            ],
-        ])->run();
+        $this->addConfig(
+            [
+                'queue' => [
+                    'name'    => $queue,
+                    'routing' => $routing,
+                ],
+            ]
+        )->run();
 
         try {
             if (!$this->getConfig('consumer.persistent') && $this->getQueueMessageCount() == 0) {
@@ -45,7 +48,7 @@ class Consumer extends Request
                 $this->getConfig('consumer.exclusive'),
                 $this->getConfig('consumer.nowait'),
                 function ($message) use ($callback) {
-                    $callback(\unserialize($message->getBody()));
+                    $callback(\unserialize($message->getBody()), $message->delivery_info['routing_key']);
                     $this->acknowledge($message);
                 }
             );

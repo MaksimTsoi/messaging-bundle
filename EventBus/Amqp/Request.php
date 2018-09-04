@@ -58,10 +58,6 @@ class Request
 
         $exchange = $this->getConfig('exchange.name');
 
-        if (empty($exchange)) {
-            throw new ConfigException('Please check your settings, exchange name is not defined.');
-        }
-
         $this->channel->exchange_declare(
             $exchange,
             $this->getConfig('exchange.type'),

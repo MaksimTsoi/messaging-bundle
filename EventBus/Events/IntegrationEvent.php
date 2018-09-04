@@ -6,6 +6,7 @@ use Ramsey\Uuid\Uuid;
 
 /**
  * Class IntegrationEvent
+ *
  * @package Tsoi\EventBusBundle\EventBus\Events
  */
 class IntegrationEvent
@@ -21,14 +22,19 @@ class IntegrationEvent
     protected $creationDate;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $routing;
+    protected $body;
+
+    /**
+     * @var array
+     */
+    protected $trace;
 
     /**
      * @var string
      */
-    protected $queue;
+    protected $from;
 
     /**
      * IntegrationEvent constructor.
@@ -56,18 +62,54 @@ class IntegrationEvent
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getRouting()
+    public function getBody(): array
     {
-        return $this->routing;
+        return $this->body;
     }
 
     /**
-     * @return mixed
+     * @param array $body
      */
-    public function getQueue()
+    public function setBody(array $body): void
     {
-        return $this->queue;
+        $this->body = $body;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFrom(): string
+    {
+        return $this->from;
+    }
+
+    /**
+     * @param string $from
+     */
+    public function setFrom(string $from): void
+    {
+        $this->from = $from;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTrace(): array
+    {
+        return $this->trace;
+    }
+
+    /**
+     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent $event
+     *
+     * @return \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent
+     */
+    public function addTrace(IntegrationEvent $event): IntegrationEvent
+    {
+        $this->trace[] = $event;
+
+        return $this;
     }
 }

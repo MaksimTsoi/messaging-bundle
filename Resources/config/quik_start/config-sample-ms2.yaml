@@ -1,0 +1,25 @@
+parameters:
+
+    tsoi_event_bus:
+        default_connection:
+            host: rabbitmq
+            port: 5672
+            user_name: guest
+            password: guest
+        current_microservice: microservice2
+        microservices:
+            microservice1:
+                integration_events:
+                    - event: 'App\IntegrationEvents\Events\SomeEvent'
+                      event_handler: 'App\IntegrationEvents\EventHandling\SomeEventHandle'
+                    - event: 'App\IntegrationEvents\Events\AnotherEvent'
+                      event_handler: 'App\IntegrationEvents\EventHandling\AnotherEventHandle'
+            microservice2:
+
+services:
+
+    App\IntegrationEvents\:
+        resource: '../src/IntegrationEvents/*'
+        autowire: true
+        autoconfigure: true
+        public: true
