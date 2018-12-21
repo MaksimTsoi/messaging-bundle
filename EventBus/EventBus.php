@@ -72,6 +72,7 @@ class EventBus implements EventBusInterface
     public function publish(IntegrationEvent $integrationEvent)
     {
         $this->config->setIntegrationEvent($integrationEvent);
+        $this->config->removeEventHandler();
         $this->publisher->addConfig($this->config->get());
         $this->publisher->publish($this->config->getRoutingName(), new Message(\serialize($integrationEvent)));
 

@@ -76,6 +76,16 @@ class EventBusConfig
     }
 
     /**
+     * @return \Tsoi\EventBusBundle\EventBus\EventBusConfig
+     */
+    public function removeEventHandler(): EventBusConfig
+    {
+        $this->eventHandler = null;
+
+        return $this;
+    }
+
+    /**
      * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent                            $integrationEvent
      * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface|null $eventHandler
      *
@@ -116,7 +126,7 @@ class EventBusConfig
         $this->data                     = \current($result);
         $exchangeName                   =
             isset($this->data['exchange']['name']) ? $this->data['exchange']['name'] : \key($result);
-        $this->data['exchange']['name'] = 'tsoi-'.$exchangeName;
+        $this->data['exchange']['name'] = 'tsoi-' . $exchangeName;
 
         if (!isset($this->data['connection'])) {
             $this->data['connection'] = $config['default_connection'];
@@ -141,7 +151,7 @@ class EventBusConfig
      */
     public function getQueueName()
     {
-        return $this->get()['exchange']['name'].'-queue';
+        return $this->get()['exchange']['name'] . '-queue';
     }
 
     /**
@@ -150,6 +160,6 @@ class EventBusConfig
      */
     public function getRoutingName()
     {
-        return $this->get()['exchange']['name'].'-'.\md5(\get_class($this->integrationEvent));
+        return $this->get()['exchange']['name'] . '-' . \md5(\get_class($this->integrationEvent));
     }
 }
