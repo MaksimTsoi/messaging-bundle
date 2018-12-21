@@ -32,7 +32,7 @@ class IntegrationEvent
     protected $trace;
 
     /**
-     * @var string
+     * @var IntegrationEvent
      */
     protected $from;
 
@@ -71,26 +71,34 @@ class IntegrationEvent
 
     /**
      * @param array $body
+     *
+     * @return IntegrationEvent
      */
-    public function setBody(array $body): void
+    public function setBody(array $body): IntegrationEvent
     {
         $this->body = $body;
+
+        return $this;
     }
 
     /**
-     * @return string
+     * @return IntegrationEvent
      */
-    public function getFrom(): string
+    public function getFrom():IntegrationEvent
     {
         return $this->from;
     }
 
     /**
-     * @param string $from
+     * @param IntegrationEvent $event
+     *
+     * @return IntegrationEvent
      */
-    public function setFrom(string $from): void
+    public function setFrom(IntegrationEvent $event): IntegrationEvent
     {
-        $this->from = $from;
+        $this->from = $event;
+
+        return $this;
     }
 
     /**
