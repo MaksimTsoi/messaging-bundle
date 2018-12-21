@@ -90,10 +90,10 @@ Create event handler `src/IntegrationEvents/EventHandling/HelloEventHandler.php`
 namespace App\IntegrationEvents\EventHandling;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler;
+use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface;
 use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
 
-class HelloEventHandler implements IntegrationEventHandler
+class HelloEventHandler implements IntegrationEventHandlerInterface
 {
     protected $container;
 

@@ -4,7 +4,7 @@ namespace Tsoi\EventBusBundle\EventBus;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Tsoi\EventBusBundle\DependencyInjection\Configuration;
-use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler;
+use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface;
 use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
 use Tsoi\EventBusBundle\Exception\ConfigException;
 
@@ -24,7 +24,7 @@ class EventBusConfig
      */
     protected $integrationEvent;
     /**
-     * @var \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler
+     * @var \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface
      */
     protected $eventHandler;
     /**
@@ -63,11 +63,11 @@ class EventBusConfig
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler $eventHandler
+     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface $eventHandler
      *
      * @return \Tsoi\EventBusBundle\EventBus\EventBusConfig
      */
-    public function setEventHandler(IntegrationEventHandler $eventHandler): EventBusConfig
+    public function setEventHandler(IntegrationEventHandlerInterface $eventHandler): EventBusConfig
     {
         $this->eventHandler = $eventHandler;
         $this->data         = [];
@@ -76,8 +76,8 @@ class EventBusConfig
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent                   $integrationEvent
-     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler|null $eventHandler
+     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent                            $integrationEvent
+     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface|null $eventHandler
      *
      * @return array
      * @throws \Tsoi\EventBusBundle\Exception\ConfigException

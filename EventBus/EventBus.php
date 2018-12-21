@@ -3,9 +3,9 @@
 namespace Tsoi\EventBusBundle\EventBus;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Tsoi\EventBusBundle\EventBus\Abstractions\DynamicIntegrationEventHandler;
+use Tsoi\EventBusBundle\EventBus\Abstractions\DynamicIntegrationEventHandlerInterface;
 use Tsoi\EventBusBundle\EventBus\Abstractions\EventBusInterface;
-use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler;
+use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface;
 use Tsoi\EventBusBundle\EventBus\Amqp\Consumer;
 use Tsoi\EventBusBundle\EventBus\Amqp\Message;
 use Tsoi\EventBusBundle\EventBus\Amqp\Publisher;
@@ -79,12 +79,12 @@ class EventBus implements EventBusInterface
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent              $integrationEvent
-     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandler $eventHandler
+     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent                       $integrationEvent
+     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface $eventHandler
      *
      * @throws \Tsoi\EventBusBundle\Exception\ConfigException
      */
-    public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandler $eventHandler)
+    public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler)
     {
         $this->config->setIntegrationEvent($integrationEvent)
                      ->setEventHandler($eventHandler);
@@ -121,21 +121,21 @@ class EventBus implements EventBusInterface
     /**
      * @inheritdoc
      */
-    public function unSubscribe(IntegrationEvent $integrationEvent, IntegrationEventHandler $eventHandler)
+    public function unSubscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler)
     {
     }
 
     /**
      * @inheritdoc
      */
-    public function subscribeDynamic(string $eventName, DynamicIntegrationEventHandler $eventHandler)
+    public function subscribeDynamic(string $eventName, DynamicIntegrationEventHandlerInterface $eventHandler)
     {
     }
 
     /**
      * @inheritdoc
      */
-    public function unSubscribeDynamic(string $eventName, DynamicIntegrationEventHandler $eventHandler)
+    public function unSubscribeDynamic(string $eventName, DynamicIntegrationEventHandlerInterface $eventHandler)
     {
     }
 }

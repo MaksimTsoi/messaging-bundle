@@ -5,10 +5,10 @@ namespace Tsoi\EventBusBundle\EventBus\Abstractions;
 use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
 
 /**
- * Interface DynamicIntegrationEventHandler
+ * Interface IntegrationEventHandler
  * @package Tsoi\EventBusBundle\EventBus\Abstractions
  */
-interface DynamicIntegrationEventHandler
+interface IntegrationEventHandlerInterface
 {
     /**
      * @param IntegrationEvent $event

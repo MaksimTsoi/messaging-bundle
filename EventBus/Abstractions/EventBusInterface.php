@@ -18,34 +18,34 @@ interface EventBusInterface
     public function publish(IntegrationEvent $integrationEvent);
 
     /**
-     * @param IntegrationEvent        $integrationEvent
-     * @param IntegrationEventHandler $eventHandler
+     * @param IntegrationEvent                 $integrationEvent
+     * @param IntegrationEventHandlerInterface $eventHandler
      *
      * @return void
      */
-    public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandler $eventHandler);
+    public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler);
 
     /**
-     * @param IntegrationEvent        $integrationEvent
-     * @param IntegrationEventHandler $eventHandler
+     * @param IntegrationEvent                 $integrationEvent
+     * @param IntegrationEventHandlerInterface $eventHandler
      *
      * @return void
      */
-    public function unSubscribe(IntegrationEvent $integrationEvent, IntegrationEventHandler $eventHandler);
+    public function unSubscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler);
 
     /**
-     * @param string                         $eventName
-     * @param DynamicIntegrationEventHandler $eventHandler
+     * @param string                                  $eventName
+     * @param DynamicIntegrationEventHandlerInterface $eventHandler
      *
      * @return void
      */
-    public function subscribeDynamic(string $eventName, DynamicIntegrationEventHandler $eventHandler);
+    public function subscribeDynamic(string $eventName, DynamicIntegrationEventHandlerInterface $eventHandler);
 
     /**
-     * @param string                         $eventName
-     * @param DynamicIntegrationEventHandler $eventHandler
+     * @param string                                  $eventName
+     * @param DynamicIntegrationEventHandlerInterface $eventHandler
      *
      * @return void
      */
-    public function unSubscribeDynamic(string $eventName, DynamicIntegrationEventHandler $eventHandler);
+    public function unSubscribeDynamic(string $eventName, DynamicIntegrationEventHandlerInterface $eventHandler);
 }
