@@ -27,7 +27,4 @@
             </exclude>
         </whitelist>
     </filter>
-    <listeners>
-        <listener class="Tsoi\EventBusBundle\Tests\TsoiTestListener" />
-    </listeners>
 </phpunit>
