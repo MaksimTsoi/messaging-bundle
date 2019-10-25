@@ -86,9 +86,6 @@ class EventBusConfig
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent                            $integrationEvent
-     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface|null $eventHandler
-     *
      * @return array
      * @throws \Tsoi\EventBusBundle\Exception\ConfigException
      */

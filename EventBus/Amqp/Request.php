@@ -6,7 +6,6 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPSSLConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
-use Tsoi\EventBusBundle\Exception\ConfigException;
 use Tsoi\EventBusBundle\Traits\Config;
 
 /**
@@ -16,23 +15,6 @@ use Tsoi\EventBusBundle\Traits\Config;
 class Request
 {
     use Config;
-
-    /**
-     * @var array
-     */
-    protected $config = [
-        'connection' => [
-            'vhost'       => '/',
-            'ssl_options' => [],
-            'options'     => [],
-        ],
-        'exchange'   => [
-            'arguments' => [],
-        ],
-        'queue'      => [
-            'data' => ['x-ha-policy' => ['S', 'all']],
-        ],
-    ];
 
     /**
      * @var AMQPStreamConnection
@@ -49,9 +31,23 @@ class Request
      */
     protected $queueMessageCount = 0;
 
-    /**
-     * @throws ConfigException
-     */
+    public function __construct()
+    {
+        $this->addConfig([
+            'connection' => [
+                'vhost'       => '/',
+                'ssl_options' => [],
+                'options'     => [],
+            ],
+            'exchange'   => [
+                'arguments' => [],
+            ],
+            'queue'      => [
+                'data' => ['x-ha-policy' => ['S', 'all']],
+            ],
+        ]);
+    }
+
     public function run()
     {
         $this->connect();

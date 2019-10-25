@@ -11,12 +11,17 @@ Trait Config
     use Helpers;
 
     /**
+     * @var array
+     */
+    private $config = [];
+
+    /**
      * @param string $key
      * @param mixed  $default
      *
      * @return mixed
      */
-    public function getConfig(string $key, $default = null) {
+    protected function getConfig(string $key, $default = null) {
         $config = $this->config;
 
         if (isset($config[$key]) || array_key_exists($key, $config)) {
