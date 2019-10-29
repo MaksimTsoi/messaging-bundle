@@ -10,7 +10,6 @@ use Tsoi\EventBusBundle\Exception\ConfigException;
 
 /**
  * Class EventBusConfig
- *
  * @package Tsoi\EventBusBundle\EventBus
  */
 class EventBusConfig
@@ -20,11 +19,11 @@ class EventBusConfig
      */
     protected $container;
     /**
-     * @var \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent
+     * @var IntegrationEvent
      */
     protected $integrationEvent;
     /**
-     * @var \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface
+     * @var IntegrationEventHandlerInterface
      */
     protected $eventHandler;
     /**
@@ -35,24 +34,24 @@ class EventBusConfig
     /**
      * EventBusConfig constructor.
      *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     * @param  ContainerInterface  $container
      *
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @throws ConfigException
      */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
 
-        if (!$this->container->hasParameter('tsoi_event_bus')) {
+        if ( ! $this->container->hasParameter('tsoi_event_bus')) {
             throw new ConfigException("Please check your config file, parameter 'tsoi_event_bus' is not defined.");
         }
 
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent $integrationEvent
+     * @param  IntegrationEvent  $integrationEvent
      *
-     * @return \Tsoi\EventBusBundle\EventBus\EventBusConfig
+     * @return EventBusConfig
      */
     public function setIntegrationEvent(IntegrationEvent $integrationEvent): EventBusConfig
     {
@@ -63,9 +62,9 @@ class EventBusConfig
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface $eventHandler
+     * @param  IntegrationEventHandlerInterface  $eventHandler
      *
-     * @return \Tsoi\EventBusBundle\EventBus\EventBusConfig
+     * @return EventBusConfig
      */
     public function setEventHandler(IntegrationEventHandlerInterface $eventHandler): EventBusConfig
     {
@@ -76,7 +75,7 @@ class EventBusConfig
     }
 
     /**
-     * @return \Tsoi\EventBusBundle\EventBus\EventBusConfig
+     * @return EventBusConfig
      */
     public function removeEventHandler(): EventBusConfig
     {
@@ -87,11 +86,11 @@ class EventBusConfig
 
     /**
      * @return array
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @throws ConfigException
      */
     public function get(): array
     {
-        if (!empty($this->data)) {
+        if ( ! empty($this->data)) {
             return $this->data;
         }
 
@@ -112,7 +111,10 @@ class EventBusConfig
                     if (\in_array($key, $event, true)) {
                         return $item;
                     }
-                }, $microservicesConfig
+
+                    return null;
+                },
+                $microservicesConfig
             )
         );
 
@@ -123,16 +125,16 @@ class EventBusConfig
         $this->data                     = \current($result);
         $exchangeName                   =
             isset($this->data['exchange']['name']) ? $this->data['exchange']['name'] : \key($result);
-        $this->data['exchange']['name'] = 'tsoi-' . $exchangeName;
+        $this->data['exchange']['name'] = 'tsoi-'.$exchangeName;
 
-        if (!isset($this->data['connection'])) {
+        if ( ! isset($this->data['connection'])) {
             $this->data['connection'] = $config['default_connection'];
         }
 
         if ($this->eventHandler) {
             $eventHandling = \array_column($this->data['integration_events'], 'event_handler');
 
-            if (!\in_array(\get_class($this->eventHandler), $eventHandling, true)) {
+            if ( ! \in_array(\get_class($this->eventHandler), $eventHandling, true)) {
                 throw new ConfigException(
                     \sprintf("Please check your config file, event handler '%s' is not defined.", $this->eventHandler)
                 );
@@ -144,19 +146,19 @@ class EventBusConfig
 
     /**
      * @return string
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @throws ConfigException
      */
-    public function getQueueName()
+    public function getQueueName(): string
     {
-        return $this->get()['exchange']['name'] . '-queue';
+        return $this->get()['exchange']['name'].'-queue';
     }
 
     /**
      * @return string
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @throws ConfigException
      */
-    public function getRoutingName()
+    public function getRoutingName(): string
     {
-        return $this->get()['exchange']['name'] . '-' . \md5(\get_class($this->integrationEvent));
+        return $this->get()['exchange']['name'].'-'.\md5(\get_class($this->integrationEvent));
     }
 }

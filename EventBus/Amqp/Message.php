@@ -10,6 +10,9 @@ use PhpAmqpLib\Message\AMQPMessage;
  */
 class Message extends AMQPMessage
 {
+    /**
+     * @var array
+     */
     protected static $propertyDefinitions = [
         'content_type'        => 'shortstr',
         'content_encoding'    => 'shortstr',

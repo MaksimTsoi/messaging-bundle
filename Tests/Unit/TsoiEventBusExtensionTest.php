@@ -8,7 +8,10 @@ use Tsoi\EventBusBundle\DependencyInjection\TsoiEventBusExtension;
 
 class TsoiEventBusExtensionTest extends AbstractExtensionTestCase
 {
-    protected function getMinimalConfiguration()
+    /**
+     * @return array|string[]
+     */
+    protected function getMinimalConfiguration(): array
     {
         return [
             'current_microservice' => 'micro1',
@@ -24,7 +27,10 @@ class TsoiEventBusExtensionTest extends AbstractExtensionTestCase
         ];
     }
 
-    public function testEventBusLoaded()
+    /**
+     * @return void
+     */
+    public function testEventBusLoaded(): void
     {
         $this->load();
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('tsoi.event_bus', 0, 'Tsoi\EventBusBundle\EventBus\Amqp\Publisher');
@@ -33,32 +39,47 @@ class TsoiEventBusExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('tsoi.event_bus', 3, 'Tsoi\EventBusBundle\EventBus\EventBusConfig');
     }
 
-    public function testEventBusConfigLoaded()
+    /**
+     * @return void
+     */
+    public function testEventBusConfigLoaded(): void
     {
         $this->load();
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('Tsoi\EventBusBundle\EventBus\EventBusConfig', 0, 'service_container');
     }
 
-    public function testConsumerLoaded()
+    /**
+     * @return void
+     */
+    public function testConsumerLoaded(): void
     {
         $this->load();
         $this->assertContainerBuilderHasService('Tsoi\EventBusBundle\EventBus\Amqp\Consumer', 'Tsoi\EventBusBundle\EventBus\Amqp\Consumer');
     }
 
-    public function testPublisherLoaded()
+    /**
+     * @return void
+     */
+    public function testPublisherLoaded(): void
     {
         $this->load();
         $this->assertContainerBuilderHasService('Tsoi\EventBusBundle\EventBus\Amqp\Publisher', 'Tsoi\EventBusBundle\EventBus\Amqp\Publisher');
     }
 
-    public function testRunCommandLoaded()
+    /**
+     * @return void
+     */
+    public function testRunCommandLoaded(): void
     {
         $this->load();
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('tsoi.command.run', 0, 'tsoi.event_bus');
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('tsoi.command.run', 1, 'service_container');
     }
 
-    protected function getContainerExtensions()
+    /**
+     * @return array|TsoiEventBusExtension[]
+     */
+    protected function getContainerExtensions(): array
     {
         return [
             new TsoiEventBusExtension(),

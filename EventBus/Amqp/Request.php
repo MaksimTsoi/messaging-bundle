@@ -33,22 +33,27 @@ class Request
 
     public function __construct()
     {
-        $this->addConfig([
-            'connection' => [
-                'vhost'       => '/',
-                'ssl_options' => [],
-                'options'     => [],
-            ],
-            'exchange'   => [
-                'arguments' => [],
-            ],
-            'queue'      => [
-                'data' => ['x-ha-policy' => ['S', 'all']],
-            ],
-        ]);
+        $this->addConfig(
+            [
+                'connection' => [
+                    'vhost'       => '/',
+                    'ssl_options' => [],
+                    'options'     => [],
+                ],
+                'exchange'   => [
+                    'arguments' => [],
+                ],
+                'queue'      => [
+                    'data' => ['x-ha-policy' => ['S', 'all']],
+                ],
+            ]
+        );
     }
 
-    public function run()
+    /**
+     * @return void
+     */
+    public function run(): void
     {
         $this->connect();
 
@@ -68,7 +73,7 @@ class Request
 
         $queue = $this->getConfig('queue.name');
 
-        if (!empty($queue) || $this->getConfig('queue.force_declare')) {
+        if ( ! empty($queue) || $this->getConfig('queue.force_declare')) {
             list($queueName, $this->queueMessageCount) = $this->channel->queue_declare(
                 $queue,
                 $this->getConfig('queue.passive'),
@@ -79,10 +84,10 @@ class Request
                 new AMQPTable($this->getConfig('queue.data'))
             );
 
-            if (!$this->getConfig('queue.nobinding')) {
+            if ( ! $this->getConfig('queue.nobinding')) {
                 $routing = $this->getConfig('queue.routing');
 
-                if (!is_array($routing)) {
+                if ( ! is_array($routing)) {
                     $routing = [$routing];
                 }
 
@@ -98,7 +103,7 @@ class Request
     /**
      * @return AMQPChannel
      */
-    public function getChannel()
+    public function getChannel(): AMQPChannel
     {
         return $this->channel;
     }
@@ -106,7 +111,7 @@ class Request
     /**
      * @return AMQPStreamConnection
      */
-    public function getConnection()
+    public function getConnection(): AMQPStreamConnection
     {
         return $this->connection;
     }
@@ -114,22 +119,28 @@ class Request
     /**
      * @return int
      */
-    public function getQueueMessageCount()
+    public function getQueueMessageCount(): int
     {
         return $this->queueMessageCount;
     }
 
     /**
-     * @param AMQPChannel          $channel
-     * @param AMQPStreamConnection $connection
+     * @param  AMQPChannel  $channel
+     * @param  AMQPStreamConnection  $connection
+     *
+     * @return void
+     * @throws \Exception
      */
-    public static function shutdown(AMQPChannel $channel, AMQPStreamConnection $connection)
+    public static function shutdown(AMQPChannel $channel, AMQPStreamConnection $connection): void
     {
         $channel->close();
         $connection->close();
     }
 
-    protected function connect()
+    /**
+     * @return void
+     */
+    protected function connect(): void
     {
         $this->connection = new AMQPSSLConnection(
             $this->getConfig('connection.host'),

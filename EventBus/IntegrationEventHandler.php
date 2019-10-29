@@ -4,10 +4,10 @@ namespace Tsoi\EventBusBundle\EventBus;
 
 use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface;
 use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
+use Tsoi\EventBusBundle\Exception\ConfigException;
 
 /**
  * Class IntegrationEventHandler
- *
  * @package Tsoi\EventBusBundle\EventBus
  */
 abstract class IntegrationEventHandler implements IntegrationEventHandlerInterface
@@ -20,7 +20,7 @@ abstract class IntegrationEventHandler implements IntegrationEventHandlerInterfa
     /**
      * IntegrationEventHandler constructor.
      *
-     * @param EventBus $eventBus
+     * @param  EventBus  $eventBus
      */
     public function __construct(EventBus $eventBus)
     {
@@ -28,12 +28,13 @@ abstract class IntegrationEventHandler implements IntegrationEventHandlerInterfa
     }
 
     /**
-     * @param IntegrationEvent $integrationEvent
-     * @param array            $body
+     * @param  IntegrationEvent  $integrationEvent
+     * @param  array  $body
      *
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @return void
+     * @throws ConfigException
      */
-    protected function response(IntegrationEvent $integrationEvent, $body = [])
+    protected function response(IntegrationEvent $integrationEvent, array $body = []): void
     {
         $responseEvent = $integrationEvent->getFrom();
         $responseEvent->setBody($body);

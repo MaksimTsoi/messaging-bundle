@@ -14,9 +14,9 @@ class Publisher extends Request
      * @param string $routing
      * @param AMQPMessage $message
      *
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @return void
      */
-    public function publish(string $routing, AMQPMessage $message)
+    public function publish(string $routing, AMQPMessage $message): void
     {
         $this->run();
 

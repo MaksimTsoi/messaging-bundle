@@ -15,7 +15,7 @@ interface EventBusInterface
      *
      * @return void
      */
-    public function publish(IntegrationEvent $integrationEvent);
+    public function publish(IntegrationEvent $integrationEvent): void;
 
     /**
      * @param IntegrationEvent                 $integrationEvent
@@ -23,7 +23,7 @@ interface EventBusInterface
      *
      * @return void
      */
-    public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler);
+    public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler): void;
 
     /**
      * @param IntegrationEvent                 $integrationEvent
@@ -31,21 +31,5 @@ interface EventBusInterface
      *
      * @return void
      */
-    public function unSubscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler);
-
-    /**
-     * @param string                                  $eventName
-     * @param DynamicIntegrationEventHandlerInterface $eventHandler
-     *
-     * @return void
-     */
-    public function subscribeDynamic(string $eventName, DynamicIntegrationEventHandlerInterface $eventHandler);
-
-    /**
-     * @param string                                  $eventName
-     * @param DynamicIntegrationEventHandlerInterface $eventHandler
-     *
-     * @return void
-     */
-    public function unSubscribeDynamic(string $eventName, DynamicIntegrationEventHandlerInterface $eventHandler);
+    public function unSubscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler): void;
 }

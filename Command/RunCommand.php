@@ -6,13 +6,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Process\Process;
 use Tsoi\EventBusBundle\DependencyInjection\Configuration;
 use Tsoi\EventBusBundle\EventBus\EventBus;
+use Tsoi\EventBusBundle\Exception\ConfigException;
 
 /**
  * Class RunCommand
- *
  * @package Tsoi\EventBusBundle\Command
  */
 class RunCommand extends Command
@@ -30,8 +29,8 @@ class RunCommand extends Command
     /**
      * RunCommand constructor.
      *
-     * @param \Tsoi\EventBusBundle\EventBus\EventBus                    $eventBus
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     * @param  EventBus  $eventBus
+     * @param  ContainerInterface  $container
      */
     public function __construct(EventBus $eventBus, ContainerInterface $container)
     {
@@ -53,7 +52,12 @@ class RunCommand extends Command
     }
 
     /**
-     * @inheritdoc
+     * @param  InputInterface  $input
+     * @param  OutputInterface  $output
+     *
+     * @return int|void|null
+     * @throws \ErrorException
+     * @throws ConfigException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
