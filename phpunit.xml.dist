@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="./Tests/bootstrap.php"
-         backupGlobals="false"
-         backupStaticAttributes="false"
+<phpunit bootstrap="./vendor/autoload.php"
+         colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="true"
-         syntaxCheck="false"
-         colors="true">
+         convertWarningsToExceptions="true">
 
     <testsuites>
-        <testsuite name="TsoiEventBusBundle test suite">
-            <directory suffix="Test.php">./Tests</directory>
+        <testsuite name="Unit tests">
+            <directory suffix="Test.php">./Tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Functional tests">
+            <directory suffix="Test.php">./Tests/Functional</directory>
         </testsuite>
     </testsuites>
 
@@ -21,7 +19,6 @@
         <whitelist>
             <directory>./</directory>
             <exclude>
-                <directory>./Controller</directory>
                 <directory>./Exception</directory>
                 <directory>./Resources</directory>
                 <directory>./Tests</directory>
@@ -29,7 +26,4 @@
             </exclude>
         </whitelist>
     </filter>
-    <listeners>
-        <listener class="Tsoi\EventBusBundle\Tests\TsoiTestListener" />
-    </listeners>
 </phpunit>

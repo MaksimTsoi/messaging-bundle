@@ -3,10 +3,10 @@
 namespace Tsoi\EventBusBundle\Traits;
 
 /**
- * Trait Helpers
+ * Trait ArrayMerge
  * @package Tsoi\EventBusBundle\Traits
  */
-Trait Helpers
+Trait ArrayMerge
 {
     /**
      * @return array

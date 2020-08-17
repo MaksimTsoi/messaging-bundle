@@ -14,14 +14,14 @@ use Tsoi\EventBusBundle\Exception\BreakException;
 class Consumer extends Request
 {
     /**
-     * @param string       $queue
-     * @param string|array $routing
-     * @param \Closure     $callback
+     * @param  string  $queue
+     * @param  string|array  $routing
+     * @param  Closure  $callback
      *
      * @return bool
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @throws \ErrorException
      */
-    public function consume(string $queue, $routing, Closure $callback)
+    public function consume(string $queue, $routing, Closure $callback): bool
     {
         $this->addConfig(
             [
@@ -30,10 +30,11 @@ class Consumer extends Request
                     'routing' => $routing,
                 ],
             ]
-        )->run();
+        );
+        $this->run();
 
         try {
-            if (!$this->getConfig('consumer.persistent') && $this->getQueueMessageCount() == 0) {
+            if ( ! $this->getConfig('consumer.persistent') && $this->getQueueMessageCount() == 0) {
                 throw new BreakException();
             }
 
@@ -59,9 +60,7 @@ class Consumer extends Request
                     $this->getConfig('consumer.wait.timeout', 0)
                 );
             }
-        } catch (BreakException $exception) {
-            return true;
-        } catch (AMQPTimeoutException $exception) {
+        } catch (BreakException | AMQPTimeoutException $e) {
             return true;
         }
 
@@ -69,25 +68,24 @@ class Consumer extends Request
     }
 
     /**
-     * @param $message
+     * @return void
      */
-    public function acknowledge($message)
+    public function cancel():void
+    {
+        $this->getChannel()->basic_cancel($this->getConfig('consumer.tag'));
+    }
+
+    /**
+     * @param  mixed  $message
+     *
+     * @return void
+     */
+    private function acknowledge($message): void
     {
         $message->delivery_info['channel']->basic_ack($message->delivery_info['delivery_tag']);
 
         if ($message->body === 'quit') {
             $message->delivery_info['channel']->basic_cancel($message->delivery_info['consumer_tag']);
         }
-    }
-
-    /**
-     * Rejects a message and requeues it if wanted (default: false).
-     *
-     * @param Message $message
-     * @param bool    $requeue
-     */
-    public function reject($message, $requeue = false)
-    {
-        $message->delivery_info['channel']->basic_reject($message->delivery_info['delivery_tag'], $requeue);
     }
 }

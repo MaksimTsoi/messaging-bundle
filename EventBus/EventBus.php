@@ -3,7 +3,6 @@
 namespace Tsoi\EventBusBundle\EventBus;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Tsoi\EventBusBundle\EventBus\Abstractions\DynamicIntegrationEventHandlerInterface;
 use Tsoi\EventBusBundle\EventBus\Abstractions\EventBusInterface;
 use Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface;
 use Tsoi\EventBusBundle\EventBus\Amqp\Consumer;
@@ -11,10 +10,10 @@ use Tsoi\EventBusBundle\EventBus\Amqp\Message;
 use Tsoi\EventBusBundle\EventBus\Amqp\Publisher;
 use Tsoi\EventBusBundle\EventBus\Amqp\Request;
 use Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent;
+use Tsoi\EventBusBundle\Exception\ConfigException;
 
 /**
  * Class EventBus
- *
  * @package Tsoi\EventBusBundle\EventBus
  */
 class EventBus implements EventBusInterface
@@ -35,7 +34,7 @@ class EventBus implements EventBusInterface
     protected $container;
 
     /**
-     * @var \Tsoi\EventBusBundle\EventBus\EventBusConfig
+     * @var EventBusConfig
      */
     protected $config;
 
@@ -47,10 +46,10 @@ class EventBus implements EventBusInterface
     /**
      * EventBus constructor.
      *
-     * @param \Tsoi\EventBusBundle\EventBus\Amqp\Publisher              $publisher
-     * @param \Tsoi\EventBusBundle\EventBus\Amqp\Consumer               $consumer
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-     * @param \Tsoi\EventBusBundle\EventBus\EventBusConfig              $config
+     * @param  Publisher  $publisher
+     * @param  Consumer  $consumer
+     * @param  ContainerInterface  $container
+     * @param  EventBusConfig  $config
      */
     public function __construct(
         Publisher $publisher,
@@ -65,11 +64,11 @@ class EventBus implements EventBusInterface
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent $integrationEvent
+     * @param  IntegrationEvent  $integrationEvent
      *
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @throws ConfigException
      */
-    public function publish(IntegrationEvent $integrationEvent)
+    public function publish(IntegrationEvent $integrationEvent): void
     {
         $this->config->setIntegrationEvent($integrationEvent);
         $this->config->removeEventHandler();
@@ -80,12 +79,13 @@ class EventBus implements EventBusInterface
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent                       $integrationEvent
-     * @param \Tsoi\EventBusBundle\EventBus\Abstractions\IntegrationEventHandlerInterface $eventHandler
+     * @param  IntegrationEvent  $integrationEvent
+     * @param  IntegrationEventHandlerInterface  $eventHandler
      *
-     * @throws \Tsoi\EventBusBundle\Exception\ConfigException
+     * @return void
+     * @throws ConfigException
      */
-    public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler)
+    public function subscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler): void
     {
         $this->config->setIntegrationEvent($integrationEvent)
                      ->setEventHandler($eventHandler);
@@ -98,9 +98,10 @@ class EventBus implements EventBusInterface
     }
 
     /**
-     * @throws \Tsoi\EventBusBundle\Exception\BreakException
+     * @return void
+     * @throws \ErrorException
      */
-    public function execute()
+    public function execute(): void
     {
         if (empty($this->subscriptions)) {
             return;
@@ -120,23 +121,11 @@ class EventBus implements EventBusInterface
     }
 
     /**
+     * @return void
      * @inheritdoc
      */
-    public function unSubscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler)
+    public function unSubscribe(IntegrationEvent $integrationEvent, IntegrationEventHandlerInterface $eventHandler): void
     {
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function subscribeDynamic(string $eventName, DynamicIntegrationEventHandlerInterface $eventHandler)
-    {
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function unSubscribeDynamic(string $eventName, DynamicIntegrationEventHandlerInterface $eventHandler)
-    {
+        $this->consumer->cancel();
     }
 }

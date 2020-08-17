@@ -8,15 +8,21 @@ namespace Tsoi\EventBusBundle\Traits;
  */
 Trait Config
 {
-    use Helpers;
+    use ArrayMerge;
 
     /**
-     * @param string $key
-     * @param mixed  $default
+     * @var array
+     */
+    private $config = [];
+
+    /**
+     * @param  string  $key
+     * @param  mixed  $default
      *
      * @return mixed
      */
-    public function getConfig(string $key, $default = null) {
+    protected function getConfig(string $key, $default = null)
+    {
         $config = $this->config;
 
         if (isset($config[$key]) || array_key_exists($key, $config)) {
@@ -37,12 +43,10 @@ Trait Config
     /**
      * @param array $data
      *
-     * @return $this
+     * @return void
      */
-    public function addConfig(array $data)
+    public function addConfig(array $data): void
     {
         $this->config = $this->arrayMergeDeep($this->config, $data);
-
-        return $this;
     }
 }

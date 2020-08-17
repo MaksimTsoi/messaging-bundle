@@ -11,10 +11,12 @@ use PhpAmqpLib\Message\AMQPMessage;
 class Publisher extends Request
 {
     /**
-     * @param $routing
-     * @param $message
+     * @param string $routing
+     * @param AMQPMessage $message
+     *
+     * @return void
      */
-    public function publish(string $routing, AMQPMessage $message)
+    public function publish(string $routing, AMQPMessage $message): void
     {
         $this->run();
 

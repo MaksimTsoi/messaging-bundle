@@ -14,27 +14,27 @@ class IntegrationEvent
     /**
      * @var string
      */
-    protected $uuid;
+    private $uuid;
 
     /**
-     * @var int
+     * @var \DateTime
      */
-    protected $creationDate;
-
-    /**
-     * @var array
-     */
-    protected $body;
+    private $creationDate;
 
     /**
      * @var array
      */
-    protected $trace;
+    private $body;
+
+    /**
+     * @var array
+     */
+    private $trace;
 
     /**
      * @var IntegrationEvent
      */
-    protected $from;
+    private $from;
 
     /**
      * IntegrationEvent constructor.
@@ -42,7 +42,7 @@ class IntegrationEvent
     public function __construct()
     {
         $this->uuid         = Uuid::uuid1()->toString();
-        $this->creationDate = time();
+        $this->creationDate = new \DateTime();
     }
 
     /**
@@ -54,7 +54,7 @@ class IntegrationEvent
     }
 
     /**
-     * @return int
+     * @return \DateTime
      */
     public function getCreationDate()
     {
@@ -110,9 +110,9 @@ class IntegrationEvent
     }
 
     /**
-     * @param \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent $event
+     * @param  IntegrationEvent  $event
      *
-     * @return \Tsoi\EventBusBundle\EventBus\Events\IntegrationEvent
+     * @return IntegrationEvent
      */
     public function addTrace(IntegrationEvent $event): IntegrationEvent
     {
